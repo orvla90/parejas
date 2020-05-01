@@ -1,76 +1,88 @@
-//guardamos la carta_bocaabajo
-const carta_bocaabajo = 'source/img/clave.svg';
-//creamos lista con los object de todas las cartas
-const card_list = [{id:1, name: 'Acordeon', src:'source/img/acordeon.svg'},
-{id:2, name: 'Arpa', src:'source/img/arpa.svg'},
-{id:3, name: 'Bateria', src:'source/img/bateria.svg'},
-{id:4, name: 'Bongos', src:'source/img/bongos.svg'},
-{id:5, name: 'Flauta', src:'source/img/flauta.svg'},
-{id:6, name: 'Guitarra', src:'source/img/guitarra.svg'},
-{id:7, name: 'Maracas', src:'source/img/maracas.svg'},
-{id:8, name: 'Piano', src:'source/img/piano.svg'},
-{id:9, name: 'Saxofon', src:'source/img/saxofon.svg'},
-{id:10, name: 'Violin', src:'source/img/violin.svg'},
-{id:11, name: 'Xilofono', src:'source/img/xilofono.svg'}]
+document.addEventListener('DOMContentLoaded', () => {
 
-class Field {
-  constructor(row, col) {
-    this.dimensions = [row, col];
-    this.cards = [];
-    this.board = [];
-    this.flip_cards = ['', ''];
-    this.num_flip_cards = 0;
-  }
-  //get the place of the cards
-  get_cards(){
-    let num_cards = this.dimensions[0]*this.dimensions[1]/2;
-    let cards = [];
-    for (var i = 0; i < num_cards; i++) {
-      cards.push(card_list[i]);
-      cards.push(card_list[i]);
-    }
-    cards.sort(()=>Math.random()<0.5);
-    this.cards = Array(this.dimensions[0]);
-    let count = 0;
-    for (var i = 0; i < this.dimensions[0]; i++) {
-      this.cards[i] = Array(this.dimensions[1]);
-      for (var j = 0; j < this.dimensions[1]; j++) {
-        this.cards[i][j] = cards[count];
-        count++;
-      }
-    }
-    return this.cards;
-  }
-  //get the board with all the cards facedown
-  get_starting_board(){
-    this.board = Array(this.dimensions[0])
-    for (var i = 0; i < this.dimensions[0]; i++) {
-      this.board[i] = {id: i, img:[]};
-      for (var j = 0; j < this.dimensions[1]; j++) {
-          this.board[i].img.push({id: j, src: carta_bocaabajo});
-      }
-    }
-  }
-  //Compare two cards
-  compare_cards(){
-    return(this.flip_cards[0].name === this.flip_cards[1].name)
-  }
-  //Flip a card
-  flip_card(row, col){
-    return(this.cards[row][col]);
-  }
-}
+  //guardamos la carta_bocaabajo
+  const carta_bocaabajo = 'source/img/clave.svg';
+  //creamos lista con los object de todas las cartas
+  const all_cards = [{name: 'Acordeon', src:'source/img/acordeon.svg'},
+      {name: 'Acordeon', src:'source/img/acordeon.svg'},
+      {name: 'Arpa', src:'source/img/arpa.svg'},
+      {name: 'Arpa', src:'source/img/arpa.svg'},
+      {name: 'Bateria', src:'source/img/bateria.svg'},
+      {name: 'Bateria', src:'source/img/bateria.svg'},
+      {name: 'Bongos', src:'source/img/bongos.svg'},
+      {name: 'Bongos', src:'source/img/bongos.svg'},
+      {name: 'Flauta', src:'source/img/flauta.svg'},
+      {name: 'Flauta', src:'source/img/flauta.svg'},
+      {name: 'Guitarra', src:'source/img/guitarra.svg'},
+      {name: 'Guitarra', src:'source/img/guitarra.svg'},
+      {name: 'Maracas', src:'source/img/maracas.svg'},
+      {name: 'Maracas', src:'source/img/maracas.svg'},
+      {name: 'Piano', src:'source/img/piano.svg'},
+      {name: 'Piano', src:'source/img/piano.svg'},
+      {name: 'Saxofon', src:'source/img/saxofon.svg'},
+      {name: 'Saxofon', src:'source/img/saxofon.svg'},
+      {name: 'Violin', src:'source/img/violin.svg'},
+      {name: 'Violin', src:'source/img/violin.svg'},
+      /*{name: 'Xilofono', src:'source/img/xilofono.svg'},
+      {name: 'Xilofono', src:'source/img/xilofono.svg'}*/];
+  const grid = document.getElementById('grid');
+  let cardsChosen = [];
+  let cardsChosenId = [];
+  let cardsWon = [];
+  let card_list = [];
 
-//Seleccionamos el elemento donde esta el codigo handlebars
-const source = document.getElementById('tablero').innerHTML;
-//Compilamos el codigo para procesarlo
-const template = Handlebars.compile(source);
-//creamos el tablero deseado
-const tablero_juego = new Field(3,4);
-tablero_juego.get_cards();
-tablero_juego.get_starting_board();
-const context = {tablero: tablero_juego.board};
-//Pasamos el tablero al codigo compilado
-const html = template(context);
-//Seleccionamos el lugar donde vamos a poner el tablero y lo cambiamos por el mismo
-document.getElementById('tablero_inicial').innerHTML = html;
+  //Create board
+  function createBoard() {
+    let id = this.getAttribute('id');
+    let size = Number(id[0])*Number(id[2]);
+    for (let i = 0; i < size; i++) {
+      card_list.push(all_cards[i]);
+    }
+    card_list.sort(()=>Math.random()-0.5);
+    const tableros = document.getElementById('tablero_inicial');
+    tableros.style.display = 'none';
+    for (let i = 0; i < size; i++) {
+      let card = document.createElement('img');
+      card.setAttribute('src', carta_bocaabajo);
+      card.setAttribute('data-id', i);
+      card.addEventListener('click', flipCard);
+      grid.appendChild(card);
+    }
+  }
+
+  function checkForMatch() {
+    let cards = document.querySelectorAll('img');
+    if(cardsChosen[0] !== cardsChosen[1]){
+      cards[cardsChosenId[0]].setAttribute('src', carta_bocaabajo);
+      cards[cardsChosenId[1]].setAttribute('src', carta_bocaabajo);
+    }else{
+      cards[cardsChosenId[0]].removeEventListener('click', flipCard);
+      cards[cardsChosenId[1]].removeEventListener('click', flipCard);
+      cardsWon.push(cards[cardsChosenId[0]]);
+    }
+    cardsChosen = [];
+    cardsChosenId = [];
+    if (cardsWon.length === card_list.length/2) {
+      alert('You found them all!!!');
+      location.reload();
+    }
+  }
+
+  function flipCard() {
+    const cardId = this.getAttribute('data-id');
+    cardsChosen.push(card_list[cardId].name);
+    cardsChosenId.push(cardId);
+    this.setAttribute('src', card_list[cardId].src);
+    if (cardsChosen.length === 2) {
+      setTimeout(checkForMatch, 500);
+    }
+  }
+  const board1 = document.getElementById('2x3');
+  board1.addEventListener('click', createBoard);
+  const board2 = document.getElementById('3x4');
+  board2.addEventListener('click', createBoard);
+  const board3 = document.getElementById('4x4');
+  board3.addEventListener('click', createBoard);
+  const board4 = document.getElementById('4x5');
+  board4.addEventListener('click', createBoard);
+})

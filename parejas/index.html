@@ -5,6 +5,8 @@
 	<meta lang="es">
 	<title>Parejas</title>
 	<link rel="stylesheet" type="text/css" href="source/css/style.css">
+	<script src="source/js/template2.js" charset="utf-8"></script>
+
 </head>
 <body>
 	<div class="header">
@@ -19,20 +21,7 @@
 		<div id="4x4">Tablero 4 x 4</div>
 		<div id="4x5">Tablero 4 x 5</div>
 	</div>
-	<div id="title"></div>
+	<div id="grid"></div>
 </body>
 
-<script id="tablero" type="text/x-handlebars-template">
-	{{#each tablero}}
-		<div id={{this.id}} class="row">
-		{{#each this.img}}
-			<img id={{this.id}} src={{this.src}}>
-		{{/each}}
-		</div>
-	{{/each}}
-</script>
-
-
-<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
-<script type="text/javascript" src="source/js/template2.js"></script>
 </html>
